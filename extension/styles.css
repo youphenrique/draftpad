@@ -1,4 +1,6 @@
-:root {
+@import "normalize.css";
+
+root {
   --bg-color: #ffffff;
   --text-color: #333333;
   --sidebar-bg: #f9f9f9;
