@@ -3,27 +3,30 @@ const NotesManager = {
   activeNoteId: null,
 
   async load() {
-    this.notes = await Storage.get('notes', []);
-    this.activeNoteId = await Storage.get('activeNoteId', null);
-    
+    this.notes = await Storage.get("notes", []);
+    this.activeNoteId = await Storage.get("activeNoteId", null);
+
     if (this.notes.length === 0) {
       this.createNote();
-    } else if (!this.activeNoteId || !this.notes.find(n => n.id === this.activeNoteId)) {
+    } else if (
+      !this.activeNoteId ||
+      !this.notes.find((n) => n.id === this.activeNoteId)
+    ) {
       this.activeNoteId = this.notes[0].id;
     }
   },
 
   async save() {
-    await Storage.set('notes', this.notes);
-    await Storage.set('activeNoteId', this.activeNoteId);
+    await Storage.set("notes", this.notes);
+    await Storage.set("activeNoteId", this.activeNoteId);
   },
 
   createNote() {
     const newNote = {
       id: Date.now().toString(),
-      title: 'Untitled',
-      content: '',
-      updatedAt: Date.now()
+      title: "Untitled",
+      content: "",
+      updatedAt: Date.now(),
     };
     this.notes.unshift(newNote);
     this.activeNoteId = newNote.id;
@@ -35,20 +38,20 @@ const NotesManager = {
     const note = this.getActiveNote();
     if (note) {
       note.content = content;
-      const firstLine = content.split('\n').find(line => line.trim() !== '');
-      note.title = firstLine ? firstLine.trim().substring(0, 50) : 'Untitled';
+      const firstLine = content.split("\n").find((line) => line.trim() !== "");
+      note.title = firstLine ? firstLine.trim().substring(0, 50) : "Untitled";
       note.updatedAt = Date.now();
-      
+
       // Move to top
-      this.notes = this.notes.filter(n => n.id !== note.id);
+      this.notes = this.notes.filter((n) => n.id !== note.id);
       this.notes.unshift(note);
-      
+
       this.save();
     }
   },
 
   deleteActiveNote() {
-    this.notes = this.notes.filter(n => n.id !== this.activeNoteId);
+    this.notes = this.notes.filter((n) => n.id !== this.activeNoteId);
     if (this.notes.length === 0) {
       this.createNote();
     } else {
@@ -58,13 +61,13 @@ const NotesManager = {
   },
 
   getActiveNote() {
-    return this.notes.find(n => n.id === this.activeNoteId);
+    return this.notes.find((n) => n.id === this.activeNoteId);
   },
 
   setActiveNote(id) {
-    if (this.notes.find(n => n.id === id)) {
+    if (this.notes.find((n) => n.id === id)) {
       this.activeNoteId = id;
       this.save();
     }
-  }
+  },
 };
