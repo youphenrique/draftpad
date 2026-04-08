@@ -1,0 +1,5 @@
+{
+  "name": "Draftpad",
+  "description": "A minimal, fast, local-first Markdown scratchpad.",
+  "requestFramePermissions": []
+}

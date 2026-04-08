@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Draftpad",
+  "version": "1.0",
+  "description": "A minimal, fast, local-first Markdown scratchpad.",
+  "permissions": ["storage"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {
+    "default_title": "Open Scratchpad"
+  },
+  "commands": {
+    "open-scratchpad": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+E",
+        "mac": "Command+Shift+E"
+      },
+      "description": "Open Markdown Scratchpad"
+    }
+  }
+}
