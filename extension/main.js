@@ -83,9 +83,20 @@ function scheduleHideEditorActions() {
   editorActionsTimer = setTimeout(hideEditorActions, 1000);
 }
 
+function updatePreviewButtonVisibility(format) {
+  const isMarkdown = format === "markdown";
+  DOM.btnTogglePreview.classList.toggle("hidden", !isMarkdown);
+  if (!isMarkdown) {
+    Preview.hide();
+    DOM.btnTogglePreview.style.backgroundColor = "";
+  }
+}
+
 function syncFormatSelector() {
   const note = NotesManager.getActiveNote();
-  DOM.formatSelector.value = note?.format ?? "markdown";
+  const format = note?.format ?? "markdown";
+  DOM.formatSelector.value = format;
+  updatePreviewButtonVisibility(format);
 }
 
 function startInlineRename(li, note) {
@@ -186,8 +197,8 @@ function loadActiveNote() {
   const note = NotesManager.getActiveNote();
   if (note) {
     DOM.editor.value = note.content;
-    Preview.render(note.content);
     syncFormatSelector();
+    Preview.render(note.content);
     DOM.editor.focus();
 
     if (note.content.trim() === "") {
@@ -266,7 +277,9 @@ async function init() {
   });
 
   DOM.formatSelector.addEventListener("change", (e) => {
-    NotesManager.updateActiveNoteFormat(e.detail.value);
+    const format = e.detail.value;
+    NotesManager.updateActiveNoteFormat(format);
+    updatePreviewButtonVisibility(format);
   });
 
   DOM.btnFormat.addEventListener("click", async () => {

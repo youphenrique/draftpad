@@ -19,6 +19,14 @@ const Preview = {
     return this.isEnabled;
   },
 
+  hide() {
+    this.isEnabled = false;
+    const previewEl = document.getElementById("preview");
+    if (previewEl) {
+      previewEl.classList.add("hidden");
+    }
+  },
+
   async loadMarked() {
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
