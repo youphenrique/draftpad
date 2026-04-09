@@ -6,11 +6,65 @@ const DOM = {
   sidebar: document.getElementById("sidebar"),
   btnNewNote: document.getElementById("btn-new-note"),
   btnToggleSidebar: document.getElementById("btn-toggle-sidebar"),
+  btnTheme: document.getElementById("btn-theme"),
   btnCopy: document.getElementById("btn-copy"),
   btnClear: document.getElementById("btn-clear"),
   btnDelete: document.getElementById("btn-delete"),
   btnTogglePreview: document.getElementById("btn-toggle-preview"),
   noteList: document.getElementById("note-list"),
+};
+
+const ThemeManager = {
+  theme: "system",
+
+  async load() {
+    this.theme = await Storage.get("theme", "system");
+    this.apply();
+
+    // Listen for system theme changes
+    window
+      .matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", () => {
+        if (this.theme === "system") {
+          this.apply();
+        }
+      });
+  },
+
+  async toggle() {
+    const effective = this.getEffectiveTheme();
+    this.theme = effective === "dark" ? "light" : "dark";
+    await Storage.set("theme", this.theme);
+    this.apply();
+  },
+
+  getEffectiveTheme() {
+    if (this.theme === "system") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return this.theme;
+  },
+
+  apply() {
+    const effective = this.getEffectiveTheme();
+    document.body.classList.remove("light-theme", "dark-theme");
+    if (this.theme !== "system") {
+      document.body.classList.add(`${this.theme}-theme`);
+    }
+
+    const darkIcon = document.getElementById("theme-icon-dark");
+    const lightIcon = document.getElementById("theme-icon-light");
+
+    if (effective === "dark") {
+      darkIcon.classList.add("hidden");
+      lightIcon.classList.remove("hidden");
+    } else {
+      darkIcon.classList.remove("hidden");
+      lightIcon.classList.add("hidden");
+    }
+  },
 };
 
 function renderNoteList() {
@@ -54,6 +108,8 @@ function handleInput() {
 
 async function init() {
   await NotesManager.load();
+  await ThemeManager.load();
+
   renderNoteList();
   loadActiveNote();
 
@@ -79,6 +135,10 @@ async function init() {
 
   DOM.btnToggleSidebar.addEventListener("click", () => {
     DOM.sidebar.classList.toggle("hidden");
+  });
+
+  DOM.btnTheme.addEventListener("click", () => {
+    ThemeManager.toggle();
   });
 
   DOM.btnCopy.addEventListener("click", () => {
