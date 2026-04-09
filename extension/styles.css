@@ -239,6 +239,9 @@ body {
     .note-item-title {
       flex: 1;
       min-width: 0;
+      display: flex;
+      align-items: center;
+      height: 1.5rem;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
@@ -299,6 +302,7 @@ main {
 .toolbar-divider {
   width: 1px;
   height: 1.25rem;
+  margin: 0 0.75rem;
   background-color: var(--border-color);
   flex-shrink: 0;
 }
@@ -325,7 +329,9 @@ main {
       gap: 8px;
       padding: 8px;
       z-index: 10;
-      background-color: var(--surface-primary);
+      background-color: color-mix(in srgb, var(--surface-primary), transparent 35%);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border-color);
       border-radius: 0.5rem;
       opacity: 0;
       pointer-events: none;
