@@ -12,7 +12,9 @@ const DOM = {
   btnToggleSidebar: document.getElementById("btn-toggle-sidebar"),
   btnCopy: document.getElementById("btn-copy"),
   btnClear: document.getElementById("btn-clear"),
+  btnFormat: document.getElementById("btn-format"),
   btnTogglePreview: document.getElementById("btn-toggle-preview"),
+  formatSelector: document.getElementById("format-selector"),
   noteList: document.getElementById("note-list"),
   lightThemeBtn: document.getElementById("light-theme-button"),
   systemThemeBtn: document.getElementById("system-theme-button"),
@@ -76,6 +78,11 @@ function scheduleHideEditorActions() {
   editorActionsTimer = setTimeout(hideEditorActions, 1000);
 }
 
+function syncFormatSelector() {
+  const note = NotesManager.getActiveNote();
+  DOM.formatSelector.value = note?.format ?? "markdown";
+}
+
 function renderNoteList() {
   DOM.noteList.innerHTML = "";
   NotesManager.notes.forEach((note) => {
@@ -96,6 +103,7 @@ function loadActiveNote() {
   if (note) {
     DOM.editor.value = note.content;
     Preview.render(note.content);
+    syncFormatSelector();
     DOM.editor.focus();
   }
 }
@@ -118,6 +126,8 @@ function handleInput() {
 async function init() {
   await NotesManager.load();
   await ThemeManager.load();
+
+  DOM.formatSelector.options = Formatter.getOptions();
 
   renderNoteList();
   loadActiveNote();
@@ -149,12 +159,41 @@ async function init() {
       : PANEL_LEFT_CLOSE_SVG;
   });
 
-  DOM.lightThemeBtn.addEventListener("click", () => ThemeManager.setTheme("light"));
-  DOM.systemThemeBtn.addEventListener("click", () => ThemeManager.setTheme("system"));
-  DOM.darkThemeBtn.addEventListener("click", () => ThemeManager.setTheme("dark"));
+  DOM.lightThemeBtn.addEventListener("click", () =>
+    ThemeManager.setTheme("light"),
+  );
+  DOM.systemThemeBtn.addEventListener("click", () =>
+    ThemeManager.setTheme("system"),
+  );
+  DOM.darkThemeBtn.addEventListener("click", () =>
+    ThemeManager.setTheme("dark"),
+  );
 
   DOM.btnCopy.addEventListener("click", () => {
     navigator.clipboard.writeText(DOM.editor.value);
+  });
+
+  DOM.formatSelector.addEventListener("change", (e) => {
+    NotesManager.updateActiveNoteFormat(e.detail.value);
+  });
+
+  DOM.btnFormat.addEventListener("click", async () => {
+    const note = NotesManager.getActiveNote();
+    const format = note?.format ?? "markdown";
+    const content = DOM.editor.value;
+    if (!content.trim()) return;
+
+    DOM.btnFormat.disabled = true;
+    try {
+      const formatted = await Formatter.format(content, format);
+      DOM.editor.value = formatted;
+      handleInput();
+    } catch (_err) {
+      DOM.btnFormat.classList.add("format-error");
+      setTimeout(() => DOM.btnFormat.classList.remove("format-error"), 1200);
+    } finally {
+      DOM.btnFormat.disabled = false;
+    }
   });
 
   DOM.btnClear.addEventListener("click", () => {
@@ -185,7 +224,7 @@ async function init() {
   });
 
   DOM.editorActions.addEventListener("mouseleave", () => {
-    scheduleHideEditorActions();
+    hideEditorActions();
   });
 }
 

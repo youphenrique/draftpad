@@ -150,6 +150,15 @@ body.dark-theme {
   &:hover {
     background-color: var(--btn-hover);
   }
+
+  &:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+
+  &.format-error {
+    color: #e5534b;
+  }
 }
 
 body {
@@ -202,7 +211,7 @@ body {
     flex: 1;
 
     .note-item {
-      padding: 12px 16px;
+      padding: 0.5rem 0.75rem;
       cursor: pointer;
       font-size: 14px;
       white-space: nowrap;
@@ -251,6 +260,13 @@ main {
 
 .spacer {
   flex: 1;
+}
+
+.toolbar-divider {
+  width: 1px;
+  height: 1.25rem;
+  background-color: var(--border-color);
+  flex-shrink: 0;
 }
 
 .editor-container {

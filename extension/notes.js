@@ -26,6 +26,7 @@ const NotesManager = {
       id: Date.now().toString(),
       title: "Untitled",
       content: "",
+      format: "markdown",
       updatedAt: Date.now(),
     };
     this.notes.unshift(newNote);
@@ -46,6 +47,14 @@ const NotesManager = {
       this.notes = this.notes.filter((n) => n.id !== note.id);
       this.notes.unshift(note);
 
+      this.save();
+    }
+  },
+
+  updateActiveNoteFormat(format) {
+    const note = this.getActiveNote();
+    if (note) {
+      note.format = format;
       this.save();
     }
   },
