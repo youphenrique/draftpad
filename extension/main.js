@@ -1,5 +1,9 @@
 let saveTimeout;
 let previewTimeout;
+let editorActionsTimer;
+
+const PANEL_LEFT_CLOSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-close"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg>`;
+const PANEL_LEFT_OPEN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-open"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>`;
 
 const DOM = {
   editor: document.getElementById("editor"),
@@ -8,9 +12,13 @@ const DOM = {
   btnToggleSidebar: document.getElementById("btn-toggle-sidebar"),
   btnCopy: document.getElementById("btn-copy"),
   btnClear: document.getElementById("btn-clear"),
-  // btnDelete: document.getElementById("btn-delete"),
   btnTogglePreview: document.getElementById("btn-toggle-preview"),
   noteList: document.getElementById("note-list"),
+  lightThemeBtn: document.getElementById("light-theme-button"),
+  systemThemeBtn: document.getElementById("system-theme-button"),
+  darkThemeBtn: document.getElementById("dark-theme-button"),
+  textareaWrapper: document.querySelector(".textarea-wrapper"),
+  editorActions: document.querySelector(".editor-actions"),
 };
 
 const ThemeManager = {
@@ -20,7 +28,6 @@ const ThemeManager = {
     this.theme = await Storage.get("theme", "system");
     this.apply();
 
-    // Listen for system theme changes
     window
       .matchMedia("(prefers-color-scheme: dark)")
       .addEventListener("change", () => {
@@ -30,20 +37,10 @@ const ThemeManager = {
       });
   },
 
-  async toggle() {
-    const effective = this.getEffectiveTheme();
-    this.theme = effective === "dark" ? "light" : "dark";
+  async setTheme(theme) {
+    this.theme = theme;
     await Storage.set("theme", this.theme);
     this.apply();
-  },
-
-  getEffectiveTheme() {
-    if (this.theme === "system") {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    }
-    return this.theme;
   },
 
   apply() {
@@ -51,8 +48,33 @@ const ThemeManager = {
     if (this.theme !== "system") {
       document.body.classList.add(`${this.theme}-theme`);
     }
+    this.updateButtons();
+  },
+
+  updateButtons() {
+    const map = {
+      light: DOM.lightThemeBtn,
+      system: DOM.systemThemeBtn,
+      dark: DOM.darkThemeBtn,
+    };
+    Object.entries(map).forEach(([theme, btn]) => {
+      btn.classList.toggle("active", theme === this.theme);
+    });
   },
 };
+
+function showEditorActions() {
+  DOM.editorActions.classList.add("visible");
+}
+
+function hideEditorActions() {
+  DOM.editorActions.classList.remove("visible");
+}
+
+function scheduleHideEditorActions() {
+  clearTimeout(editorActionsTimer);
+  editorActionsTimer = setTimeout(hideEditorActions, 1000);
+}
 
 function renderNoteList() {
   DOM.noteList.innerHTML = "";
@@ -121,12 +143,15 @@ async function init() {
   });
 
   DOM.btnToggleSidebar.addEventListener("click", () => {
-    DOM.sidebar.classList.toggle("hidden");
+    const isHidden = DOM.sidebar.classList.toggle("hidden");
+    DOM.btnToggleSidebar.innerHTML = isHidden
+      ? PANEL_LEFT_OPEN_SVG
+      : PANEL_LEFT_CLOSE_SVG;
   });
 
-  // DOM.btnTheme.addEventListener("click", () => {
-  //   ThemeManager.toggle();
-  // });
+  DOM.lightThemeBtn.addEventListener("click", () => ThemeManager.setTheme("light"));
+  DOM.systemThemeBtn.addEventListener("click", () => ThemeManager.setTheme("system"));
+  DOM.darkThemeBtn.addEventListener("click", () => ThemeManager.setTheme("dark"));
 
   DOM.btnCopy.addEventListener("click", () => {
     navigator.clipboard.writeText(DOM.editor.value);
@@ -138,19 +163,29 @@ async function init() {
     DOM.editor.focus();
   });
 
-  // DOM.btnDelete.addEventListener("click", () => {
-  //   if (confirm("Are you sure you want to delete this note?")) {
-  //     NotesManager.deleteActiveNote();
-  //     loadActiveNote();
-  //     renderNoteList();
-  //   }
-  // });
-
   DOM.btnTogglePreview.addEventListener("click", async () => {
     const isEnabled = await Preview.toggle();
     DOM.btnTogglePreview.style.backgroundColor = isEnabled
       ? "var(--active-bg)"
       : "";
+  });
+
+  DOM.textareaWrapper.addEventListener("mousemove", () => {
+    showEditorActions();
+    scheduleHideEditorActions();
+  });
+
+  DOM.textareaWrapper.addEventListener("mouseleave", () => {
+    clearTimeout(editorActionsTimer);
+    hideEditorActions();
+  });
+
+  DOM.editorActions.addEventListener("mouseenter", () => {
+    clearTimeout(editorActionsTimer);
+  });
+
+  DOM.editorActions.addEventListener("mouseleave", () => {
+    scheduleHideEditorActions();
   });
 }
 
