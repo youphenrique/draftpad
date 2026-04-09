@@ -6,10 +6,9 @@ const DOM = {
   sidebar: document.getElementById("sidebar"),
   btnNewNote: document.getElementById("btn-new-note"),
   btnToggleSidebar: document.getElementById("btn-toggle-sidebar"),
-  btnTheme: document.getElementById("btn-theme"),
   btnCopy: document.getElementById("btn-copy"),
   btnClear: document.getElementById("btn-clear"),
-  btnDelete: document.getElementById("btn-delete"),
+  // btnDelete: document.getElementById("btn-delete"),
   btnTogglePreview: document.getElementById("btn-toggle-preview"),
   noteList: document.getElementById("note-list"),
 };
@@ -48,21 +47,9 @@ const ThemeManager = {
   },
 
   apply() {
-    const effective = this.getEffectiveTheme();
     document.body.classList.remove("light-theme", "dark-theme");
     if (this.theme !== "system") {
       document.body.classList.add(`${this.theme}-theme`);
-    }
-
-    const darkIcon = document.getElementById("theme-icon-dark");
-    const lightIcon = document.getElementById("theme-icon-light");
-
-    if (effective === "dark") {
-      darkIcon.classList.add("hidden");
-      lightIcon.classList.remove("hidden");
-    } else {
-      darkIcon.classList.remove("hidden");
-      lightIcon.classList.add("hidden");
     }
   },
 };
@@ -137,9 +124,9 @@ async function init() {
     DOM.sidebar.classList.toggle("hidden");
   });
 
-  DOM.btnTheme.addEventListener("click", () => {
-    ThemeManager.toggle();
-  });
+  // DOM.btnTheme.addEventListener("click", () => {
+  //   ThemeManager.toggle();
+  // });
 
   DOM.btnCopy.addEventListener("click", () => {
     navigator.clipboard.writeText(DOM.editor.value);
@@ -151,13 +138,13 @@ async function init() {
     DOM.editor.focus();
   });
 
-  DOM.btnDelete.addEventListener("click", () => {
-    if (confirm("Are you sure you want to delete this note?")) {
-      NotesManager.deleteActiveNote();
-      loadActiveNote();
-      renderNoteList();
-    }
-  });
+  // DOM.btnDelete.addEventListener("click", () => {
+  //   if (confirm("Are you sure you want to delete this note?")) {
+  //     NotesManager.deleteActiveNote();
+  //     loadActiveNote();
+  //     renderNoteList();
+  //   }
+  // });
 
   DOM.btnTogglePreview.addEventListener("click", async () => {
     const isEnabled = await Preview.toggle();
