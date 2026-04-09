@@ -13,8 +13,8 @@
   "commands": {
     "open-scratchpad": {
       "suggested_key": {
-        "default": "Ctrl+Shift+E",
-        "mac": "Command+Shift+E"
+        "default": "Alt+Shift+D",
+        "mac": "Command+Shift+D"
       },
       "description": "Open Markdown Scratchpad"
     }

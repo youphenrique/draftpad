@@ -327,7 +327,7 @@ main {
       right: 1.75rem;
       display: flex;
       gap: 8px;
-      padding: 8px;
+      padding: 0.25rem;
       z-index: 10;
       background-color: color-mix(in srgb, var(--surface-primary), transparent 35%);
       backdrop-filter: blur(8px);
