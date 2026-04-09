@@ -6,6 +6,7 @@ const MORE_OPTIONS_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="15" hei
 
 
 const PANEL_LEFT_OPEN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-open"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>`;
+const PANEL_LEFT_CLOSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-close"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg>`;
 
 const DOM = {
   editor: document.getElementById("editor"),
@@ -68,7 +69,9 @@ const ThemeManager = {
 };
 
 function showEditorActions() {
-  DOM.editorActions.classList.add("visible");
+  if (DOM.editor.value.trim().length > 0) {
+    DOM.editorActions.classList.add("visible");
+  }
 }
 
 function hideEditorActions() {
@@ -186,11 +189,19 @@ function loadActiveNote() {
     Preview.render(note.content);
     syncFormatSelector();
     DOM.editor.focus();
+
+    if (note.content.trim() === "") {
+      hideEditorActions();
+    }
   }
 }
 
 function handleInput() {
   const content = DOM.editor.value;
+
+  if (content.trim() === "") {
+    hideEditorActions();
+  }
 
   clearTimeout(saveTimeout);
   saveTimeout = setTimeout(() => {
