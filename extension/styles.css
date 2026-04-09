@@ -211,12 +211,12 @@ body {
     flex: 1;
 
     .note-item {
-      padding: 0.5rem 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.5rem 0.25rem 0.75rem;
       cursor: pointer;
       font-size: 14px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
       color: var(--text-color);
       border-radius: 0.5rem;
 
@@ -228,6 +228,40 @@ body {
         background-color: var(--surface-tertiary);
         font-weight: 500;
       }
+
+      &:hover .note-item-menu,
+      .note-item-menu.is-open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    .note-item-title {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .note-item-menu {
+      flex-shrink: 0;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+
+    .note-item-rename-input {
+      flex: 1;
+      min-width: 0;
+      font-size: 14px;
+      font-family: var(--font-sans), serif;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      outline: none;
+      color: var(--text-color);
+      padding: 0;
     }
   }
 }

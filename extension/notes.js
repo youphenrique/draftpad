@@ -25,6 +25,7 @@ const NotesManager = {
     const newNote = {
       id: Date.now().toString(),
       title: "Untitled",
+      customTitle: null,
       content: "",
       format: "markdown",
       updatedAt: Date.now(),
@@ -39,8 +40,10 @@ const NotesManager = {
     const note = this.getActiveNote();
     if (note) {
       note.content = content;
-      const firstLine = content.split("\n").find((line) => line.trim() !== "");
-      note.title = firstLine ? firstLine.trim().substring(0, 50) : "Untitled";
+      if (note.customTitle === null || note.customTitle === undefined) {
+        const firstLine = content.split("\n").find((line) => line.trim() !== "");
+        note.title = firstLine ? firstLine.trim().substring(0, 50) : "Untitled";
+      }
       note.updatedAt = Date.now();
 
       // Move to top
@@ -67,6 +70,24 @@ const NotesManager = {
       this.activeNoteId = this.notes[0].id;
     }
     this.save();
+  },
+
+  deleteNote(id) {
+    this.notes = this.notes.filter((n) => n.id !== id);
+    if (this.notes.length === 0) {
+      this.createNote();
+    } else if (this.activeNoteId === id) {
+      this.activeNoteId = this.notes[0].id;
+    }
+    this.save();
+  },
+
+  renameNote(id, newTitle) {
+    const note = this.notes.find((n) => n.id === id);
+    if (note) {
+      note.customTitle = newTitle.trim() || null;
+      this.save();
+    }
   },
 
   getActiveNote() {

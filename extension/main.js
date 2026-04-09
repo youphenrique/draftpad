@@ -2,7 +2,9 @@ let saveTimeout;
 let previewTimeout;
 let editorActionsTimer;
 
-const PANEL_LEFT_CLOSE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-close"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m16 15-3-3 3-3"/></svg>`;
+const MORE_OPTIONS_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>`;
+
+
 const PANEL_LEFT_OPEN_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-panel-left-open"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/><path d="m14 9 3 3-3 3"/></svg>`;
 
 const DOM = {
@@ -83,17 +85,96 @@ function syncFormatSelector() {
   DOM.formatSelector.value = note?.format ?? "markdown";
 }
 
+function startInlineRename(li, note) {
+  const titleEl = li.querySelector(".note-item-title");
+  if (!titleEl) return;
+
+  const currentTitle = note.customTitle ?? note.title;
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = "note-item-rename-input";
+  input.value = currentTitle;
+
+  li.replaceChild(input, titleEl);
+  input.focus();
+  input.select();
+
+  let saved = false;
+
+  function save() {
+    if (saved) return;
+    saved = true;
+    const newTitle = input.value.trim();
+    NotesManager.renameNote(note.id, newTitle || note.title);
+    renderNoteList();
+  }
+
+  function cancel() {
+    if (saved) return;
+    saved = true;
+    renderNoteList();
+  }
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      save();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      cancel();
+    }
+    e.stopPropagation();
+  });
+
+  input.addEventListener("blur", save);
+
+  input.addEventListener("click", (e) => e.stopPropagation());
+}
+
 function renderNoteList() {
   DOM.noteList.innerHTML = "";
   NotesManager.notes.forEach((note) => {
     const li = document.createElement("li");
     li.className = `note-item ${note.id === NotesManager.activeNoteId ? "active" : ""}`;
-    li.textContent = note.title || "Untitled";
-    li.onclick = () => {
+
+    const titleSpan = document.createElement("span");
+    titleSpan.className = "note-item-title";
+    titleSpan.textContent = (note.customTitle ?? note.title) || "Untitled";
+
+    const menu = document.createElement("dp-select");
+    menu.className = "note-item-menu";
+    menu.actionMode = true;
+    menu.align = "right";
+    menu.icon = MORE_OPTIONS_SVG;
+    menu.options = [
+      { value: "rename", label: "Rename" },
+      { value: "delete", label: "Delete" },
+    ];
+
+    menu.addEventListener("open", () => menu.classList.add("is-open"));
+    menu.addEventListener("close", () => menu.classList.remove("is-open"));
+
+    menu.addEventListener("action", (e) => {
+      if (e.detail.value === "rename") {
+        startInlineRename(li, note);
+      } else if (e.detail.value === "delete") {
+        NotesManager.deleteNote(note.id);
+        renderNoteList();
+        loadActiveNote();
+      }
+    });
+
+    menu.addEventListener("click", (e) => e.stopPropagation());
+
+    li.addEventListener("click", () => {
+      if (li.querySelector(".note-item-rename-input")) return;
       NotesManager.setActiveNote(note.id);
       loadActiveNote();
       renderNoteList();
-    };
+    });
+
+    li.appendChild(titleSpan);
+    li.appendChild(menu);
     DOM.noteList.appendChild(li);
   });
 }
@@ -185,8 +266,7 @@ async function init() {
 
     DOM.btnFormat.disabled = true;
     try {
-      const formatted = await Formatter.format(content, format);
-      DOM.editor.value = formatted;
+      DOM.editor.value = await Formatter.format(content, format);
       handleInput();
     } catch (_err) {
       DOM.btnFormat.classList.add("format-error");
@@ -209,9 +289,13 @@ async function init() {
       : "";
   });
 
-  DOM.textareaWrapper.addEventListener("mousemove", () => {
+  DOM.textareaWrapper.addEventListener("mousemove", (e) => {
     showEditorActions();
-    scheduleHideEditorActions();
+    if (!DOM.editorActions.contains(e.target)) {
+      scheduleHideEditorActions();
+    } else {
+      clearTimeout(editorActionsTimer);
+    }
   });
 
   DOM.textareaWrapper.addEventListener("mouseleave", () => {
@@ -224,7 +308,7 @@ async function init() {
   });
 
   DOM.editorActions.addEventListener("mouseleave", () => {
-    hideEditorActions();
+    scheduleHideEditorActions();
   });
 }
 

@@ -5,6 +5,9 @@ class DpSelect extends HTMLElement {
   #shadow;
   #triggerEl;
   #listEl;
+  #icon = null;
+  #actionMode = false;
+  #align = "left";
 
   constructor() {
     super();
@@ -54,6 +57,34 @@ class DpSelect extends HTMLElement {
     this.#updateTrigger();
   }
 
+  get icon() {
+    return this.#icon;
+  }
+
+  set icon(svg) {
+    this.#icon = svg;
+    this.#updateTrigger();
+  }
+
+  get actionMode() {
+    return this.#actionMode;
+  }
+
+  set actionMode(val) {
+    this.#actionMode = Boolean(val);
+    this.#updateList();
+    this.#updateTrigger();
+  }
+
+  get align() {
+    return this.#align;
+  }
+
+  set align(val) {
+    this.#align = val === "right" ? "right" : "left";
+    this.#updateDropdownAlign();
+  }
+
   #getSelectedLabel() {
     const opt = this.#options.find((o) => o.value === this.#value);
     return opt?.label ?? this.#options[0]?.label ?? "";
@@ -83,6 +114,12 @@ class DpSelect extends HTMLElement {
           cursor: pointer;
           transition: background-color 0.15s ease-in-out;
           white-space: nowrap;
+        }
+
+        .trigger.icon-only {
+          padding: 0;
+          width: 2rem;
+          justify-content: center;
         }
 
         .trigger:hover {
@@ -119,6 +156,11 @@ class DpSelect extends HTMLElement {
           z-index: 100;
           overflow: hidden;
           padding: 4px;
+        }
+
+        .dropdown.align-right {
+          left: auto;
+          right: 0;
         }
 
         .dropdown.hidden {
@@ -158,6 +200,10 @@ class DpSelect extends HTMLElement {
         .option.selected .check-icon {
           visibility: visible;
         }
+
+        :host([action-mode]) .check-icon {
+          display: none;
+        }
       </style>
       <button class="trigger" part="trigger" type="button">
         <span class="label"></span>
@@ -177,9 +223,23 @@ class DpSelect extends HTMLElement {
   }
 
   #updateTrigger() {
-    const label = this.#shadow.querySelector(".label");
-    if (label) label.textContent = this.#getSelectedLabel();
-    this.#triggerEl?.classList.toggle("open", this.#isOpen);
+    if (!this.#triggerEl) return;
+
+    if (this.#icon) {
+      this.#triggerEl.innerHTML = this.#icon;
+      this.#triggerEl.classList.add("icon-only");
+    } else {
+      const label = this.#shadow.querySelector(".label");
+      if (label) label.textContent = this.#getSelectedLabel();
+      this.#triggerEl.classList.remove("icon-only");
+    }
+
+    this.#triggerEl.classList.toggle("open", this.#isOpen);
+  }
+
+  #updateDropdownAlign() {
+    if (!this.#listEl) return;
+    this.#listEl.classList.toggle("align-right", this.#align === "right");
   }
 
   #updateList() {
@@ -187,11 +247,15 @@ class DpSelect extends HTMLElement {
     this.#listEl.innerHTML = this.#options
       .map(
         (opt) => `
-        <div class="option ${opt.value === this.#value ? "selected" : ""}" data-value="${opt.value}">
+        <div class="option ${!this.#actionMode && opt.value === this.#value ? "selected" : ""}" data-value="${opt.value}">
           <span>${opt.label}</span>
-          <svg class="check-icon" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          ${
+            !this.#actionMode
+              ? `<svg class="check-icon" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 6.5l3 3 6-6"/>
-          </svg>
+          </svg>`
+              : ""
+          }
         </div>
       `,
       )
@@ -201,6 +265,18 @@ class DpSelect extends HTMLElement {
       el.addEventListener("click", () => {
         const newValue = el.dataset.value;
         this.#close();
+
+        if (this.#actionMode) {
+          this.dispatchEvent(
+            new CustomEvent("action", {
+              detail: { value: newValue },
+              bubbles: true,
+              composed: true,
+            }),
+          );
+          return;
+        }
+
         if (newValue === this.#value) return;
         this.#value = newValue;
         this.setAttribute("value", newValue);
@@ -221,8 +297,10 @@ class DpSelect extends HTMLElement {
     this.#isOpen = true;
     this.#listEl.classList.remove("hidden");
     this.#triggerEl.classList.add("open");
+    this.#updateDropdownAlign();
     document.addEventListener("click", this._outsideClickHandler, true);
     document.addEventListener("keydown", this._keydownHandler);
+    this.dispatchEvent(new CustomEvent("open", { bubbles: true, composed: true }));
   }
 
   #close() {
@@ -231,6 +309,7 @@ class DpSelect extends HTMLElement {
     this.#triggerEl.classList.remove("open");
     document.removeEventListener("click", this._outsideClickHandler, true);
     document.removeEventListener("keydown", this._keydownHandler);
+    this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
   }
 
   #toggle() {
