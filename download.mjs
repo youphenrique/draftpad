@@ -3,6 +3,7 @@ import https from "https";
 import path from "path";
 
 const EXTENSION_DIR = path.join(process.cwd(), "extension");
+const VENDOR_DIR = path.join(EXTENSION_DIR, "vendor");
 
 function download(url, dest) {
   return new Promise((resolve, reject) => {
@@ -35,35 +36,43 @@ function download(url, dest) {
 const files = [
   {
     url: "https://cdn.jsdelivr.net/npm/marked/marked.min.js",
-    dest: path.join(EXTENSION_DIR, "marked.min.js"),
+    dest: path.join(VENDOR_DIR, "marked.min.js"),
   },
   {
     url: "https://unpkg.com/prettier@3/standalone.js",
-    dest: path.join(EXTENSION_DIR, "prettier.browser.js"),
+    dest: path.join(VENDOR_DIR, "prettier.browser.js"),
   },
   {
     url: "https://unpkg.com/prettier@3/plugins/estree.js",
-    dest: path.join(EXTENSION_DIR, "prettier-plugin-estree.js"),
+    dest: path.join(VENDOR_DIR, "prettier-plugin-estree.js"),
   },
   {
     url: "https://unpkg.com/prettier@3/plugins/babel.js",
-    dest: path.join(EXTENSION_DIR, "prettier-plugin-babel.js"),
+    dest: path.join(VENDOR_DIR, "prettier-plugin-babel.js"),
   },
   {
     url: "https://unpkg.com/prettier@3/plugins/typescript.js",
-    dest: path.join(EXTENSION_DIR, "prettier-plugin-typescript.js"),
+    dest: path.join(VENDOR_DIR, "prettier-plugin-typescript.js"),
   },
   {
     url: "https://unpkg.com/prettier@3/plugins/markdown.js",
-    dest: path.join(EXTENSION_DIR, "prettier-plugin-markdown.js"),
+    dest: path.join(VENDOR_DIR, "prettier-plugin-markdown.js"),
   },
   {
     url: "https://unpkg.com/prettier@3/plugins/html.js",
-    dest: path.join(EXTENSION_DIR, "prettier-plugin-html.js"),
+    dest: path.join(VENDOR_DIR, "prettier-plugin-html.js"),
   },
   {
     url: "https://unpkg.com/prettier@3/plugins/postcss.js",
-    dest: path.join(EXTENSION_DIR, "prettier-plugin-postcss.js"),
+    dest: path.join(VENDOR_DIR, "prettier-plugin-postcss.js"),
+  },
+  {
+    url: "https://unpkg.com/preact@10.20.1/dist/preact.mjs",
+    dest: path.join(VENDOR_DIR, "preact.mjs"),
+  },
+  {
+    url: "https://unpkg.com/htm@3.1.1/dist/htm.mjs",
+    dest: path.join(VENDOR_DIR, "htm.mjs"),
   },
 ];
 

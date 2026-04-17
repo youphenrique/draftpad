@@ -1,10 +1,20 @@
+// @ts-check
+
+/**
+ * @namespace Preview
+ */
 const Preview = {
   isEnabled: false,
   isLoaded: false,
 
+  /**
+   * Toggles the visibility and rendering of the markdown preview.
+   * @returns {Promise<boolean>}
+   */
   async toggle() {
     this.isEnabled = !this.isEnabled;
     const previewEl = document.getElementById("preview");
+    if (!previewEl) return this.isEnabled;
 
     if (this.isEnabled) {
       previewEl.classList.remove("hidden");
@@ -27,10 +37,13 @@ const Preview = {
     }
   },
 
+  /**
+   * @returns {Promise<void>}
+   */
   async loadMarked() {
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
-      script.src = "marked.min.js";
+      script.src = "vendor/marked.min.js";
       script.onload = () => {
         this.isLoaded = true;
         resolve();
@@ -40,10 +53,21 @@ const Preview = {
     });
   },
 
+  /**
+   * @param {string} [content]
+   */
   render(content) {
     if (!this.isEnabled || !this.isLoaded) return;
-    const text =
-      content !== undefined ? content : document.getElementById("editor").value;
-    document.getElementById("preview").innerHTML = marked.parse(text);
+    
+    /** @type {HTMLTextAreaElement | null} */
+    const editorEl = /** @type {any} */(document.getElementById("editor"));
+    const text = content !== undefined ? content : (editorEl ? editorEl.value : "");
+    const previewEl = document.getElementById("preview");
+    
+    // @ts-ignore - marked is loaded dynamically
+    if (previewEl && typeof marked !== "undefined") {
+      // @ts-ignore
+      previewEl.innerHTML = marked.parse(text);
+    }
   },
 };

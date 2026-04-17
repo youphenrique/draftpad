@@ -1,3 +1,6 @@
+// @ts-check
+/// <reference path="./browser-env.js" />
+
 chrome.action.onClicked.addListener(() => {
   chrome.tabs.create({ url: "index.html" });
 });
