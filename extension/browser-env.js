@@ -46,5 +46,4 @@ let chrome;
 // @ts-ignore
 let browser;
 
-
 /** --- GLOBALS FOR DRAFTPAD --- */

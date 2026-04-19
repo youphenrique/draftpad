@@ -58,12 +58,12 @@ const Preview = {
    */
   render(content) {
     if (!this.isEnabled || !this.isLoaded) return;
-    
+
     /** @type {HTMLTextAreaElement | null} */
-    const editorEl = /** @type {any} */(document.getElementById("editor"));
-    const text = content !== undefined ? content : (editorEl ? editorEl.value : "");
+    const editorEl = /** @type {any} */ (document.getElementById("editor"));
+    const text = content !== undefined ? content : editorEl ? editorEl.value : "";
     const previewEl = document.getElementById("preview");
-    
+
     // @ts-ignore - marked is loaded dynamically
     if (previewEl && typeof marked !== "undefined") {
       // @ts-ignore

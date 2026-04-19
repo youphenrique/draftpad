@@ -1,9 +1,7 @@
-import { h, render, Component } from 'preact';
-// @ts-ignore
-import { html } from 'htm/preact';
+import { html, render, Component } from "preact";
 
-import { Sidebar } from './components/sidebar.js';
-import { EditorArea } from './components/editor-area.js';
+import { Sidebar } from "./components/sidebar.js";
+import { EditorArea } from "./components/editor-area.js";
 
 /**
  * @typedef {Object} AppState
@@ -27,9 +25,9 @@ class App extends Component {
     this.state = {
       notes: [],
       activeNoteId: null,
-      theme: 'system',
+      theme: "system",
       isSidebarHidden: false,
-      isPreviewEnabled: false
+      isPreviewEnabled: false,
     };
 
     this.handleNotesChange = this.handleNotesChange.bind(this);
@@ -48,11 +46,14 @@ class App extends Component {
 
     // @ts-ignore
     const theme = await AppStorage.get("theme", "system");
-    this.setState({
-      notes: NotesManager.notes,
-      activeNoteId: NotesManager.activeNoteId,
-      theme
-    }, () => this.applyTheme(theme));
+    this.setState(
+      {
+        notes: NotesManager.notes,
+        activeNoteId: NotesManager.activeNoteId,
+        theme,
+      },
+      () => this.applyTheme(theme),
+    );
 
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", this.handlePrefersColorScheme);
     document.addEventListener("visibilitychange", this.handleVisibilityChange);
@@ -68,7 +69,7 @@ class App extends Component {
   handleNotesChange() {
     this.setState({
       notes: [...NotesManager.notes],
-      activeNoteId: NotesManager.activeNoteId
+      activeNoteId: NotesManager.activeNoteId,
     });
   }
 
@@ -81,7 +82,7 @@ class App extends Component {
   handleVisibilityChange() {
     if (document.visibilityState === "hidden") {
       /** @type {HTMLTextAreaElement | null} */
-      const editorEl = /** @type {any} */(document.getElementById("editor"));
+      const editorEl = /** @type {any} */ (document.getElementById("editor"));
       if (editorEl) NotesManager.updateActiveNote(editorEl.value);
     }
   }
@@ -106,7 +107,7 @@ class App extends Component {
 
   handleToggleSidebar() {
     // @ts-ignore
-    this.setState(prev => ({ isSidebarHidden: !prev.isSidebarHidden }));
+    this.setState((prev) => ({ isSidebarHidden: !prev.isSidebarHidden }));
   }
 
   /**
@@ -132,7 +133,7 @@ class App extends Component {
 
     return html`
       <div class="app-container">
-        <${Sidebar} 
+        <${Sidebar}
           notes=${notes}
           activeNoteId=${activeNoteId}
           isHidden=${isSidebarHidden}
@@ -145,7 +146,9 @@ class App extends Component {
           isSidebarHidden=${isSidebarHidden}
           onToggleSidebar=${this.handleToggleSidebar}
           activeNote=${activeNote}
-          formatOptions=${/** @type {any} */(globalThis).Formatter ? /** @type {any} */(globalThis).Formatter.getOptions() : []}
+          formatOptions=${
+            /** @type {any} */ (globalThis).Formatter ? /** @type {any} */ (globalThis).Formatter.getOptions() : []
+          }
           isPreviewEnabled=${isPreviewEnabled}
           onTogglePreview=${this.handleTogglePreview}
         />
@@ -155,7 +158,7 @@ class App extends Component {
 }
 
 // Mount app
-const root = document.getElementById('app');
+const root = document.getElementById("app");
 
 if (root !== null) {
   render(html`<${App} />`, root);

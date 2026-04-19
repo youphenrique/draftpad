@@ -1,8 +1,7 @@
 // @ts-check
-import { h, Component } from 'preact';
-// @ts-ignore
-import { html } from 'htm/preact';
-import { Dropdown } from './dropdown.js';
+import { html, Component } from "preact";
+
+import { Dropdown } from "./dropdown.js";
 import {
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
@@ -12,8 +11,8 @@ import {
   CopyIcon,
   FormatIcon,
   ClearIcon,
-  PreviewIcon
-} from './icons.js';
+  PreviewIcon,
+} from "./icons.js";
 
 /**
  * @typedef {Object} EditorAreaProps
@@ -47,7 +46,7 @@ export class EditorArea extends Component {
     this.state = {
       showActions: false,
       isFormatting: false,
-      flashError: false
+      flashError: false,
     };
 
     /** @type {ReturnType<typeof setTimeout> | null} */
@@ -85,10 +84,10 @@ export class EditorArea extends Component {
   componentDidUpdate(prevProps) {
     // @ts-ignore
     if (prevProps.activeNote?.id !== this.props.activeNote?.id) {
-       this.setState({ showActions: false });
-       if (this.editorEl) {
-         this.editorEl.focus();
-       }
+      this.setState({ showActions: false });
+      if (this.editorEl) {
+        this.editorEl.focus();
+      }
     }
   }
 
@@ -113,7 +112,7 @@ export class EditorArea extends Component {
   handleInput(e) {
     // @ts-ignore
     const content = e.target.value;
-    if (content.trim() === '') {
+    if (content.trim() === "") {
       this.setState({ showActions: false });
     }
 
@@ -142,7 +141,7 @@ export class EditorArea extends Component {
     // @ts-ignore
     const { activeNote } = this.props;
     const format = activeNote?.format ?? "markdown";
-    const content = this.editorEl?.value || '';
+    const content = this.editorEl?.value || "";
     if (!content.trim()) return;
 
     this.setState({ isFormatting: true });
@@ -169,8 +168,8 @@ export class EditorArea extends Component {
       activeNote,
       formatOptions,
       isPreviewEnabled,
-      onTogglePreview
-    } = /** @type {EditorAreaProps} */(this.props);
+      onTogglePreview,
+    } = /** @type {EditorAreaProps} */ (this.props);
 
     // @ts-ignore
     const { showActions, isFormatting, flashError } = this.state;
@@ -180,16 +179,11 @@ export class EditorArea extends Component {
       <main>
         <div class="main-area">
           <header class="toolbar">
-            <button
-              id="btn-toggle-sidebar"
-              title="Toggle Sidebar"
-              class="icon-button"
-              onClick=${onToggleSidebar}
-            >
+            <button id="btn-toggle-sidebar" title="Toggle Sidebar" class="icon-button" onClick=${onToggleSidebar}>
               ${isSidebarHidden ? html`<${PanelLeftOpenIcon} />` : html`<${PanelLeftCloseIcon} />`}
             </button>
             <div class="spacer"></div>
-            <${Dropdown} 
+            <${Dropdown}
               id="format-selector"
               value=${activeNote?.format ?? "markdown"}
               options=${formatOptions}
@@ -199,34 +193,34 @@ export class EditorArea extends Component {
             <div id="theme-toggle" class="theme-toggle-group">
               <button
                 aria-label="Light theme"
-                class="icon-button ${theme === 'light' ? 'active' : ''}"
-                onClick=${() => onThemeChange('light')}
+                class="icon-button ${theme === "light" ? "active" : ""}"
+                onClick=${() => onThemeChange("light")}
               >
                 <${LightThemeIcon} />
               </button>
               <button
                 aria-label="System theme"
-                class="icon-button ${theme === 'system' ? 'active' : ''}"
-                onClick=${() => onThemeChange('system')}
+                class="icon-button ${theme === "system" ? "active" : ""}"
+                onClick=${() => onThemeChange("system")}
               >
                 <${SystemThemeIcon} />
               </button>
               <button
                 aria-label="Dark theme"
-                class="icon-button ${theme === 'dark' ? 'active' : ''}"
-                onClick=${() => onThemeChange('dark')}
+                class="icon-button ${theme === "dark" ? "active" : ""}"
+                onClick=${() => onThemeChange("dark")}
               >
                 <${DarkThemeIcon} />
               </button>
             </div>
           </header>
-          
+
           <div class="editor-container">
-            <div 
+            <div
               class="textarea-wrapper"
               onMouseMove=${(/** @type {MouseEvent} */ e) => {
                 this.showActions();
-                if (this.actionsEl && !this.actionsEl.contains(/** @type {Node} */(e.target))) {
+                if (this.actionsEl && !this.actionsEl.contains(/** @type {Node} */ (e.target))) {
                   this.scheduleHideActions();
                 } else {
                   // @ts-ignore
@@ -243,28 +237,28 @@ export class EditorArea extends Component {
                 id="editor"
                 placeholder="Start typing..."
                 spellcheck="false"
-                value=${activeNote ? activeNote.content : ''}
+                value=${activeNote ? activeNote.content : ""}
                 onInput=${this.handleInput}
                 onBlur=${this.handleBlur}
-                ref=${(/** @type {HTMLTextAreaElement} */ el) => this.editorEl = el}
+                ref=${(/** @type {HTMLTextAreaElement} */ el) => (this.editorEl = el)}
               ></textarea>
-              
-              <div 
-                class="editor-actions ${showActions ? 'visible' : ''}"
-                ref=${(/** @type {HTMLDivElement} */ el) => this.actionsEl = el}
-                onMouseEnter=${() => clearTimeout(/** @type {ReturnType<typeof setTimeout>} */(this.hideActionsTimer))}
+
+              <div
+                class="editor-actions ${showActions ? "visible" : ""}"
+                ref=${(/** @type {HTMLDivElement} */ el) => (this.actionsEl = el)}
+                onMouseEnter=${() => clearTimeout(/** @type {ReturnType<typeof setTimeout>} */ (this.hideActionsTimer))}
                 onMouseLeave=${this.scheduleHideActions}
               >
-                <button 
-                  title="Copy Content" 
+                <button
+                  title="Copy Content"
                   class="icon-button"
-                  onClick=${() => navigator.clipboard.writeText(this.editorEl?.value || '')}
+                  onClick=${() => navigator.clipboard.writeText(this.editorEl?.value || "")}
                 >
                   <${CopyIcon} />
                 </button>
                 <button
                   title="Format Content"
-                  class="icon-button ${flashError ? 'format-error' : ''}"
+                  class="icon-button ${flashError ? "format-error" : ""}"
                   onClick=${this.handleFormat}
                   disabled=${isFormatting}
                 >
@@ -274,10 +268,10 @@ export class EditorArea extends Component {
                   title="Clear Content"
                   class="icon-button"
                   onClick=${() => {
-                    if(this.editorEl) {
-                      this.editorEl.value = '';
+                    if (this.editorEl) {
+                      this.editorEl.value = "";
                       // @ts-ignore
-                      this.handleInput({target: this.editorEl});
+                      this.handleInput({ target: this.editorEl });
                       this.editorEl.focus();
                     }
                   }}
@@ -286,7 +280,7 @@ export class EditorArea extends Component {
                 </button>
                 <button
                   title="Toggle Preview"
-                  class="icon-button ${!isMarkdown ? 'hidden' : ''}"
+                  class="icon-button ${!isMarkdown ? "hidden" : ""}"
                   style=${isPreviewEnabled ? "background-color: var(--active-bg)" : ""}
                   onClick=${onTogglePreview}
                 >
@@ -294,7 +288,7 @@ export class EditorArea extends Component {
                 </button>
               </div>
             </div>
-            <div id="preview" class="preview-area ${isPreviewEnabled ? '' : 'hidden'}"></div>
+            <div id="preview" class="preview-area ${isPreviewEnabled ? "" : "hidden"}"></div>
           </div>
         </div>
       </main>

@@ -46,10 +46,7 @@ const NotesManager = {
 
     if (this.notes.length === 0) {
       this.createNote();
-    } else if (
-      !this.activeNoteId ||
-      !this.notes.find((n) => n.id === this.activeNoteId)
-    ) {
+    } else if (!this.activeNoteId || !this.notes.find((n) => n.id === this.activeNoteId)) {
       this.activeNoteId = this.notes[0].id;
     }
 

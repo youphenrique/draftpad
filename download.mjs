@@ -67,12 +67,8 @@ const files = [
     dest: path.join(VENDOR_DIR, "prettier-plugin-postcss.js"),
   },
   {
-    url: "https://unpkg.com/preact@10.20.1/dist/preact.mjs",
-    dest: path.join(VENDOR_DIR, "preact.mjs"),
-  },
-  {
-    url: "https://unpkg.com/htm@3.1.1/dist/htm.mjs",
-    dest: path.join(VENDOR_DIR, "htm.mjs"),
+    url: "https://unpkg.com/htm/preact/standalone.module.js",
+    dest: path.join(VENDOR_DIR, "preact-standalone.mjs"),
   },
 ];
 

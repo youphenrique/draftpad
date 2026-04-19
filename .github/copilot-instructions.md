@@ -42,6 +42,7 @@ State flows: `main.js` → `NotesManager` (mutates in-memory state, persists via
 ### Extension: Cross-Browser Compatibility
 
 The `Storage` wrapper detects Firefox vs Chrome at runtime:
+
 ```js
 const api = typeof browser !== "undefined" ? browser : chrome;
 ```

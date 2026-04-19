@@ -51,10 +51,7 @@ const Formatter = {
     typescript: {
       label: "TypeScript",
       parser: "typescript",
-      pluginFiles: [
-        "vendor/prettier-plugin-estree.js",
-        "vendor/prettier-plugin-typescript.js",
-      ],
+      pluginFiles: ["vendor/prettier-plugin-estree.js", "vendor/prettier-plugin-typescript.js"],
       pluginKeys: ["estree", "typescript"],
     },
   },

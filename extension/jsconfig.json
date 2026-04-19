@@ -7,10 +7,6 @@
     "strict": true,
     "noEmit": true
   },
-  "include": [
-    "**/*.js"
-  ],
-  "exclude": [
-    "vendor"
-  ]
+  "include": ["**/*.js"],
+  "exclude": ["vendor"]
 }
