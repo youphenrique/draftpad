@@ -1,5 +1,5 @@
 // @ts-check
-import { html, Component } from "preact";
+import { html, Component } from "../vendor/preact-standalone.mjs";
 
 import { Dropdown } from "./dropdown.js";
 import { PlusIcon, MoreOptionsIcon } from "./icons.js";

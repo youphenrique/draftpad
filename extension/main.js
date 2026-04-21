@@ -1,4 +1,4 @@
-import { html, render, Component } from "preact";
+import { html, render, Component } from "./vendor/preact-standalone.mjs";
 
 import { Sidebar } from "./components/sidebar.js";
 import { EditorArea } from "./components/editor-area.js";
