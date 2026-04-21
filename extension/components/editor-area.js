@@ -21,6 +21,8 @@ import {
  * @property {any} activeNote
  * @property {boolean} isPreviewEnabled
  * @property {() => void} onTogglePreview
+ * @property {boolean} isFullWidth
+ * @property {() => void} onToggleFullWidth
  */
 
 /**
@@ -138,6 +140,8 @@ export class EditorArea extends Component {
       activeNote,
       isPreviewEnabled,
       onTogglePreview,
+      isFullWidth,
+      onToggleFullWidth,
     } = /** @type {EditorAreaProps} */ (this.props);
 
     // @ts-ignore
@@ -151,6 +155,17 @@ export class EditorArea extends Component {
               ${isSidebarHidden ? html`<${PanelLeftOpenIcon} />` : html`<${PanelLeftCloseIcon} />`}
             </button>
             <div class="spacer"></div>
+            <button
+              title=${isFullWidth ? "Use minimal width" : "Use full width"}
+              aria-label=${isFullWidth ? "Use minimal width" : "Use full width"}
+              aria-pressed=${isFullWidth}
+              class="width-toggle-switch ${isFullWidth ? "is-on" : ""}"
+              onClick=${onToggleFullWidth}
+            >
+              <span class="width-toggle-switch-track">
+                <span class="width-toggle-switch-thumb"></span>
+              </span>
+            </button>
             <div id="theme-toggle" class="theme-toggle-group">
               <button
                 aria-label="Light theme"
@@ -178,7 +193,7 @@ export class EditorArea extends Component {
 
           <div class="editor-container">
             <div
-              class="textarea-wrapper"
+              class="textarea-wrapper ${isFullWidth ? "full-width" : ""}"
               onMouseMove=${(/** @type {MouseEvent} */ e) => {
                 this.showActions();
                 if (this.actionsEl && !this.actionsEl.contains(/** @type {Node} */ (e.target))) {
@@ -194,15 +209,17 @@ export class EditorArea extends Component {
                 this.setState({ showActions: false });
               }}
             >
-              <textarea
-                id="editor"
-                placeholder="Start typing..."
-                spellcheck="false"
-                value=${activeNote ? activeNote.content : ""}
-                onInput=${this.handleInput}
-                onBlur=${this.handleBlur}
-                ref=${(/** @type {HTMLTextAreaElement} */ el) => (this.editorEl = el)}
-              ></textarea>
+              <div class="editor-content-shell">
+                <textarea
+                  id="editor"
+                  placeholder="Start typing..."
+                  spellcheck="false"
+                  value=${activeNote ? activeNote.content : ""}
+                  onInput=${this.handleInput}
+                  onBlur=${this.handleBlur}
+                  ref=${(/** @type {HTMLTextAreaElement} */ el) => (this.editorEl = el)}
+                ></textarea>
+              </div>
 
               <div
                 class="editor-actions ${showActions ? "visible" : ""}"
@@ -241,7 +258,9 @@ export class EditorArea extends Component {
                 </button>
               </div>
             </div>
-            <div id="preview" class="preview-area ${isPreviewEnabled ? "" : "hidden"}"></div>
+            <div id="preview" class="preview-area ${isPreviewEnabled ? "" : "hidden"}">
+              <div id="preview-content" class="preview-content ${isFullWidth ? "full-width" : ""}"></div>
+            </div>
           </div>
         </div>
       </main>

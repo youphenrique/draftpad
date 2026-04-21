@@ -29,6 +29,7 @@
   --btn-border: #d1d1d1;
   --btn-hover: #f0f0f0;
   --link-color: #0066cc;
+  --editor-content-max-width: 46rem;
   --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
 }
@@ -150,6 +151,67 @@ body.dark-theme {
   &:disabled {
     opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  &.active {
+    background-color: var(--active-bg);
+  }
+}
+
+.width-toggle-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: none;
+  color: var(--text-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: var(--btn-hover);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--link-color);
+    outline-offset: 2px;
+  }
+
+  .width-toggle-switch-track {
+    width: 2.25rem;
+    height: 1.25rem;
+    display: flex;
+    align-items: center;
+    padding: 0.125rem;
+    border-radius: 9999px;
+    background-color: var(--btn-border);
+    transition:
+      background-color 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  .width-toggle-switch-thumb {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    background-color: var(--surface-tertiary);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+    transform: translateX(0);
+    transition:
+      transform 0.25s ease,
+      background-color 0.25s ease;
+  }
+
+  &.is-on .width-toggle-switch-track {
+    background-color: var(--link-color);
+  }
+
+  &.is-on .width-toggle-switch-thumb {
+    transform: translateX(1rem);
   }
 }
 
@@ -327,6 +389,18 @@ main {
       pointer-events: auto;
     }
 
+    .editor-content-shell {
+      width: min(100%, var(--editor-content-max-width));
+      height: 100%;
+      margin: 0 auto;
+      transition: width 0.2s ease;
+    }
+
+    &.full-width .editor-content-shell {
+      width: 100%;
+      max-width: none;
+    }
+
     textarea {
       width: 100%;
       height: 100%;
@@ -351,6 +425,17 @@ main {
     font-family: var(--font-sans), serif;
     line-height: 1.6;
     font-size: 15px;
+  }
+
+  .preview-content {
+    width: min(100%, var(--editor-content-max-width));
+    margin: 0 auto;
+    transition: width 0.2s ease;
+  }
+
+  .preview-content.full-width {
+    width: 100%;
+    max-width: none;
   }
 
   .preview-area.hidden {

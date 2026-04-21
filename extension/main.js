@@ -10,6 +10,7 @@ import { EditorArea } from "./components/editor-area.js";
  * @property {string} theme
  * @property {boolean} isSidebarHidden
  * @property {boolean} isPreviewEnabled
+ * @property {boolean} isFullWidth
  */
 
 /**
@@ -28,6 +29,7 @@ class App extends Component {
       theme: "system",
       isSidebarHidden: false,
       isPreviewEnabled: false,
+      isFullWidth: false,
     };
 
     this.handleNotesChange = this.handleNotesChange.bind(this);
@@ -36,6 +38,7 @@ class App extends Component {
     this.handleSelectNote = this.handleSelectNote.bind(this);
     this.handleNewNote = this.handleNewNote.bind(this);
     this.handleTogglePreview = this.handleTogglePreview.bind(this);
+    this.handleToggleFullWidth = this.handleToggleFullWidth.bind(this);
     this.handleVisibilityChange = this.handleVisibilityChange.bind(this);
     this.handlePrefersColorScheme = this.handlePrefersColorScheme.bind(this);
   }
@@ -46,11 +49,14 @@ class App extends Component {
 
     // @ts-ignore
     const theme = await AppStorage.get("theme", "system");
+    // @ts-ignore
+    const isFullWidth = await AppStorage.get("isFullWidth", false);
     this.setState(
       {
         notes: NotesManager.notes,
         activeNoteId: NotesManager.activeNoteId,
         theme,
+        isFullWidth,
       },
       () => this.applyTheme(theme),
     );
@@ -126,9 +132,15 @@ class App extends Component {
     this.setState({ isPreviewEnabled: isEnabled });
   }
 
+  async handleToggleFullWidth() {
+    const isFullWidth = !this.state.isFullWidth;
+    this.setState({ isFullWidth });
+    await AppStorage.set("isFullWidth", isFullWidth);
+  }
+
   render() {
     // @ts-ignore
-    const { notes, activeNoteId, theme, isSidebarHidden, isPreviewEnabled } = this.state;
+    const { notes, activeNoteId, theme, isSidebarHidden, isPreviewEnabled, isFullWidth } = this.state;
     const activeNote = notes.find((/** @type {Note} */ n) => n.id === activeNoteId) || null;
 
     return html`
@@ -148,6 +160,8 @@ class App extends Component {
           activeNote=${activeNote}
           isPreviewEnabled=${isPreviewEnabled}
           onTogglePreview=${this.handleTogglePreview}
+          isFullWidth=${isFullWidth}
+          onToggleFullWidth=${this.handleToggleFullWidth}
         />
       </div>
     `;

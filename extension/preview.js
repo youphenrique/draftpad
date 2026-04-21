@@ -62,12 +62,12 @@ const Preview = {
     /** @type {HTMLTextAreaElement | null} */
     const editorEl = /** @type {any} */ (document.getElementById("editor"));
     const text = content !== undefined ? content : editorEl ? editorEl.value : "";
-    const previewEl = document.getElementById("preview");
+    const previewContentEl = document.getElementById("preview-content");
 
     // @ts-ignore - marked is loaded dynamically
-    if (previewEl && typeof marked !== "undefined") {
+    if (previewContentEl && typeof marked !== "undefined") {
       // @ts-ignore
-      previewEl.innerHTML = marked.parse(text);
+      previewContentEl.innerHTML = marked.parse(text);
     }
   },
 };
