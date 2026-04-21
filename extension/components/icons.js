@@ -155,30 +155,6 @@ export class CopyIcon extends Component {
 }
 
 /** @extends {Component} */
-export class FormatIcon extends Component {
-  render() {
-    return html`
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="18"
-        height="18"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
-        <rect width="18" height="18" x="3" y="3" rx="2" />
-        <path d="M7 8h10" />
-        <path d="M7 12h10" />
-        <path d="M7 16h6" />
-      </svg>
-    `;
-  }
-}
-
-/** @extends {Component} */
 export class ClearIcon extends Component {
   render() {
     return html`

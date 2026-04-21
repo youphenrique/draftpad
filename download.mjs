@@ -39,34 +39,6 @@ const files = [
     dest: path.join(VENDOR_DIR, "marked.min.js"),
   },
   {
-    url: "https://unpkg.com/prettier@3/standalone.js",
-    dest: path.join(VENDOR_DIR, "prettier.browser.js"),
-  },
-  {
-    url: "https://unpkg.com/prettier@3/plugins/estree.js",
-    dest: path.join(VENDOR_DIR, "prettier-plugin-estree.js"),
-  },
-  {
-    url: "https://unpkg.com/prettier@3/plugins/babel.js",
-    dest: path.join(VENDOR_DIR, "prettier-plugin-babel.js"),
-  },
-  {
-    url: "https://unpkg.com/prettier@3/plugins/typescript.js",
-    dest: path.join(VENDOR_DIR, "prettier-plugin-typescript.js"),
-  },
-  {
-    url: "https://unpkg.com/prettier@3/plugins/markdown.js",
-    dest: path.join(VENDOR_DIR, "prettier-plugin-markdown.js"),
-  },
-  {
-    url: "https://unpkg.com/prettier@3/plugins/html.js",
-    dest: path.join(VENDOR_DIR, "prettier-plugin-html.js"),
-  },
-  {
-    url: "https://unpkg.com/prettier@3/plugins/postcss.js",
-    dest: path.join(VENDOR_DIR, "prettier-plugin-postcss.js"),
-  },
-  {
     url: "https://unpkg.com/htm/preact/standalone.module.js",
     dest: path.join(VENDOR_DIR, "preact-standalone.mjs"),
   },

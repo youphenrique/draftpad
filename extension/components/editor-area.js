@@ -1,7 +1,6 @@
 // @ts-check
 import { html, Component } from "../vendor/preact-standalone.mjs";
 
-import { Dropdown } from "./dropdown.js";
 import {
   PanelLeftCloseIcon,
   PanelLeftOpenIcon,
@@ -9,7 +8,6 @@ import {
   SystemThemeIcon,
   DarkThemeIcon,
   CopyIcon,
-  FormatIcon,
   ClearIcon,
   PreviewIcon,
 } from "./icons.js";
@@ -21,7 +19,6 @@ import {
  * @property {boolean} isSidebarHidden
  * @property {() => void} onToggleSidebar
  * @property {any} activeNote
- * @property {Array<{value: string, label: string}>} formatOptions
  * @property {boolean} isPreviewEnabled
  * @property {() => void} onTogglePreview
  */
@@ -29,8 +26,6 @@ import {
 /**
  * @typedef {Object} EditorAreaState
  * @property {boolean} showActions
- * @property {boolean} isFormatting
- * @property {boolean} flashError
  */
 
 /**
@@ -45,8 +40,6 @@ export class EditorArea extends Component {
     /** @type {EditorAreaState} */
     this.state = {
       showActions: false,
-      isFormatting: false,
-      flashError: false,
     };
 
     /** @type {ReturnType<typeof setTimeout> | null} */
@@ -66,7 +59,6 @@ export class EditorArea extends Component {
     this.handleBlur = this.handleBlur.bind(this);
     this.scheduleHideActions = this.scheduleHideActions.bind(this);
     this.showActions = this.showActions.bind(this);
-    this.handleFormat = this.handleFormat.bind(this);
   }
 
   componentDidMount() {
@@ -137,28 +129,6 @@ export class EditorArea extends Component {
     NotesManager.updateActiveNote(e.target.value);
   }
 
-  async handleFormat() {
-    // @ts-ignore
-    const { activeNote } = this.props;
-    const format = activeNote?.format ?? "markdown";
-    const content = this.editorEl?.value || "";
-    if (!content.trim()) return;
-
-    this.setState({ isFormatting: true });
-    try {
-      const formatted = await Formatter.format(content, format);
-      if (this.editorEl) this.editorEl.value = formatted;
-      NotesManager.updateActiveNote(formatted);
-      Preview.render(formatted);
-    } catch (_err) {
-      // Simulate error flash
-      this.setState({ flashError: true });
-      setTimeout(() => this.setState({ flashError: false }), 1200);
-    } finally {
-      this.setState({ isFormatting: false });
-    }
-  }
-
   render() {
     const {
       theme,
@@ -166,14 +136,12 @@ export class EditorArea extends Component {
       isSidebarHidden,
       onToggleSidebar,
       activeNote,
-      formatOptions,
       isPreviewEnabled,
       onTogglePreview,
     } = /** @type {EditorAreaProps} */ (this.props);
 
     // @ts-ignore
-    const { showActions, isFormatting, flashError } = this.state;
-    const isMarkdown = (activeNote?.format ?? "markdown") === "markdown";
+    const { showActions } = this.state;
 
     return html`
       <main>
@@ -183,13 +151,6 @@ export class EditorArea extends Component {
               ${isSidebarHidden ? html`<${PanelLeftOpenIcon} />` : html`<${PanelLeftCloseIcon} />`}
             </button>
             <div class="spacer"></div>
-            <${Dropdown}
-              id="format-selector"
-              value=${activeNote?.format ?? "markdown"}
-              options=${formatOptions}
-              onChange=${(/** @type {string} */ val) => NotesManager.updateActiveNoteFormat(val)}
-            />
-            <div class="toolbar-divider"></div>
             <div id="theme-toggle" class="theme-toggle-group">
               <button
                 aria-label="Light theme"
@@ -257,14 +218,6 @@ export class EditorArea extends Component {
                   <${CopyIcon} />
                 </button>
                 <button
-                  title="Format Content"
-                  class="icon-button ${flashError ? "format-error" : ""}"
-                  onClick=${this.handleFormat}
-                  disabled=${isFormatting}
-                >
-                  <${FormatIcon} />
-                </button>
-                <button
                   title="Clear Content"
                   class="icon-button"
                   onClick=${() => {
@@ -280,7 +233,7 @@ export class EditorArea extends Component {
                 </button>
                 <button
                   title="Toggle Preview"
-                  class="icon-button ${!isMarkdown ? "hidden" : ""}"
+                  class="icon-button"
                   style=${isPreviewEnabled ? "background-color: var(--active-bg)" : ""}
                   onClick=${onTogglePreview}
                 >

@@ -151,10 +151,6 @@ body.dark-theme {
     opacity: 0.45;
     cursor: not-allowed;
   }
-
-  &.format-error {
-    color: #e5534b;
-  }
 }
 
 body {
@@ -293,14 +289,6 @@ main {
 
 .spacer {
   flex: 1;
-}
-
-.toolbar-divider {
-  width: 1px;
-  height: 1.25rem;
-  margin: 0 0.75rem;
-  background-color: var(--border-color);
-  flex-shrink: 0;
 }
 
 .editor-container {

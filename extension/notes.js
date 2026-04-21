@@ -7,7 +7,6 @@
  * @property {string} title
  * @property {string | null} customTitle
  * @property {string} content
- * @property {string} format
  * @property {number} updatedAt
  */
 
@@ -69,7 +68,6 @@ const NotesManager = {
       title: "Untitled",
       customTitle: null,
       content: "",
-      format: "markdown",
       updatedAt: Date.now(),
     };
     this.notes.unshift(newNote);
@@ -96,17 +94,6 @@ const NotesManager = {
       this.notes = this.notes.filter((n) => n.id !== note.id);
       this.notes.unshift(note);
 
-      this.save();
-    }
-  },
-
-  /**
-   * @param {string} format
-   */
-  updateActiveNoteFormat(format) {
-    const note = this.getActiveNote();
-    if (note) {
-      note.format = format;
       this.save();
     }
   },

@@ -146,9 +146,6 @@ class App extends Component {
           isSidebarHidden=${isSidebarHidden}
           onToggleSidebar=${this.handleToggleSidebar}
           activeNote=${activeNote}
-          formatOptions=${
-            /** @type {any} */ (globalThis).Formatter ? /** @type {any} */ (globalThis).Formatter.getOptions() : []
-          }
           isPreviewEnabled=${isPreviewEnabled}
           onTogglePreview=${this.handleTogglePreview}
         />
